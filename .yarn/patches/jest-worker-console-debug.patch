@@ -1,0 +1,37 @@
+diff --git a/build/workers/ChildProcessWorker.js b/build/workers/ChildProcessWorker.js
+index f8a42c961d572ba5110dce6f4bb61dcf0333abc4..2b4370f3ebffe5087b5c14fb51ad295007d80438 100644
+--- a/build/workers/ChildProcessWorker.js
++++ b/build/workers/ChildProcessWorker.js
+@@ -170,6 +170,12 @@ class ChildProcessWorker {
+ 
+     child.on('message', this._onMessage.bind(this));
+     child.on('exit', this._onExit.bind(this));
++    console.debug('initialize:', [
++      _types.CHILD_MESSAGE_INITIALIZE,
++      false,
++      this._options.workerPath,
++      this._options.setupArgs
++    ]);
+     child.send([
+       _types.CHILD_MESSAGE_INITIALIZE,
+       false,
+diff --git a/build/workers/processChild.js b/build/workers/processChild.js
+index fdf766ec0e3fe013cec19b9c9a5cfb86d4578535..91281b740757fa0519c2ceace7798a534bb39c7a 100644
+--- a/build/workers/processChild.js
++++ b/build/workers/processChild.js
+@@ -26,6 +26,7 @@ let initialized = false;
+  */
+ 
+ const messageListener = request => {
++  console.debug('messageListener:', request);
+   switch (request[0]) {
+     case _types.CHILD_MESSAGE_INITIALIZE:
+       const init = request;
+@@ -50,6 +51,7 @@ const messageListener = request => {
+ };
+ 
+ process.on('message', messageListener);
++console.debug('processChild: registered messageListener');
+ 
+ function reportSuccess(result) {
+   if (!process || !process.send) {
